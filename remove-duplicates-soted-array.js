@@ -44,3 +44,7 @@ var removeDuplicates = function(nums) {
 
     return nums.length;
 };
+
+// this solution is O(1) space but O(n^2) time because of splice
+// other option for O(n) time since it doesn't matter what we leave at the end could be to copy things backwards as we go
+// and keep a counter of where the last element of the stuff we want is
