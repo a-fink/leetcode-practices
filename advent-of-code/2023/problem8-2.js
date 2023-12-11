@@ -34,9 +34,7 @@ function getFileDataAndInstructions() {
 
 function countDirections() {
   const { instructions, hash, locations } = getFileDataAndInstructions();
-  //   console.log(instructions);
-  //   console.log(hash);
-  //   console.log(locations);
+
   const cycleSteps = [];
 
   locations.forEach((location) => {
@@ -48,7 +46,36 @@ function countDirections() {
     cycleSteps.push([stepsToFirstZ, stepsToZAgain]);
   });
 
-  return cycleSteps;
+  console.log(cycleSteps);
+
+  const steps = [];
+  cycleSteps.forEach((stepPair) => {
+    steps.push(stepPair[0]);
+  });
+
+  const lcm = steps.reduce(findLCM);
+
+  //   let lcm = cycleSteps.pop()[0];
+  //   console.log("starting lcm", lcm);
+  //   for (let i = 0; i < cycleSteps.length; i++) {
+  //     const nextNum = cycleSteps[i][0];
+  //     lcm = findLCM(lcm, nextNum);
+  //     console.log("nextNum", nextNum);
+  //     console.log("new lcm", lcm);
+  //   }
+
+  return lcm;
+}
+
+function findLCM(num1, num2) {
+  console.log("in lcm nums are", num1, num2);
+  const gcd = findGCD(num1, num2);
+  console.log("gcd is", gcd);
+  return (num1 * num2) / gcd;
+}
+
+function findGCD(num1, num2) {
+  return !num2 ? num1 : findGCD(num2, num1 % num2);
 }
 
 function getStepsForOneCycle(start, instructions, hash) {
