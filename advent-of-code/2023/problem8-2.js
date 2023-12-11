@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { loadavg } = require("os");
 
 function getFileDataAndInstructions() {
   try {
@@ -36,35 +37,45 @@ function countDirections() {
   //   console.log(instructions);
   //   console.log(hash);
   //   console.log(locations);
+  const cycleSteps = [];
 
-  let currLocations = locations;
-  console.log("starting locations", currLocations);
-  console.log("instructions", instructions);
-  let steps = 0;
-  let allAtEnd = false;
+  locations.forEach((location) => {
+    const { stepsToFirstZ, stepsToZAgain } = getStepsForOneCycle(
+      location,
+      instructions,
+      hash
+    );
+    cycleSteps.push([stepsToFirstZ, stepsToZAgain]);
+  });
 
-  while (!allAtEnd) {
-    const direction = instructions[steps % instructions.length];
+  return cycleSteps;
+}
 
-    // console.log("old locations", currLocations);
-    let newLocations = [];
-    allAtEnd = true;
-    currLocations.forEach((location, i) => {
-      const newLocation = hash.get(`${location}-${direction}`);
-      //   console.log("new location", newLocation);
-      allAtEnd = allAtEnd && newLocation[2] === "Z";
-      newLocations.push(newLocation);
-    });
-    currLocations = newLocations;
-    console.log("new locations", currLocations);
-    console.log("all at end", allAtEnd);
-    steps++;
+function getStepsForOneCycle(start, instructions, hash) {
+  let stepsToFirstZ = 0;
+  let stepsToZAgain = 0;
+  let firstZ = null;
+  let currSteps = 0;
+  let currLocation = start;
 
-    // TODO - re-work this with LCM approach to stop endless looping
-    if (steps === 200) break;
+  while (true) {
+    while (currSteps === 0 || currLocation[2] !== "Z") {
+      currSteps++;
+      const direction = instructions[currSteps % instructions.length];
+      currLocation = hash.get(`${currLocation}-${direction}`);
+    }
+
+    if (!firstZ) {
+      firstZ = currLocation;
+      stepsToFirstZ = currSteps;
+      currSteps = 0;
+    } else if (currLocation === firstZ) {
+      stepsToZAgain = currSteps;
+      break;
+    }
   }
 
-  return steps;
+  return { stepsToFirstZ, stepsToZAgain };
 }
 
 console.log(countDirections());
