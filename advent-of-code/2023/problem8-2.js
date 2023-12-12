@@ -53,7 +53,7 @@ function countDirections() {
     steps.push(stepPair[0]);
   });
 
-  const lcm = steps.reduce(findLCM);
+  const lcm = steps.reduce((acc, n) => findLCM(acc, n));
 
   //   let lcm = cycleSteps.pop()[0];
   //   console.log("starting lcm", lcm);
@@ -75,7 +75,14 @@ function findLCM(num1, num2) {
 }
 
 function findGCD(num1, num2) {
-  return !num2 ? num1 : findGCD(num2, num1 % num2);
+  let gcd;
+  for (let i = 1; i <= num1 && i <= num2; i++) {
+    if (num1 % i === 0 && num2 % i === 0) {
+      gcd = i;
+    }
+  }
+
+  return gcd;
 }
 
 function getStepsForOneCycle(start, instructions, hash) {
